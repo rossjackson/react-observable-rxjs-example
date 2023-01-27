@@ -18,7 +18,8 @@
    "homepage": "https://github.com/rossjackson/react-observable-rxjs-example#readme",
    "dependencies": {
       "react": "18.2.0",
-      "react-dom": "18.2.0"
+      "react-dom": "18.2.0",
+      "rxjs": "7.8.0"
    },
    "devDependencies": {
       "@babel/plugin-transform-runtime": "7.19.6",
