@@ -9,6 +9,10 @@
    @include v-stack;
 }
 
+.margin-bottom {
+   margin-bottom: 16px;
+}
+
 .item {
    display: flex;
    width: 104px;
