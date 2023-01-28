@@ -1,4 +1,5 @@
-import { Observable } from 'rxjs'
+import { catchError, Observable, of, switchMap } from 'rxjs'
+import { fromFetch } from 'rxjs/fetch'
 
 const getTimeZone = () => new Intl.DateTimeFormat().resolvedOptions().timeZone
 
@@ -16,7 +17,7 @@ interface DailyUnits {
    temperature_2m_max: '°C' | '°F'
 }
 
-interface Daily {
+export interface Daily {
    time: string[]
    temperature_2m_min: number[]
    temperature_2m_max: number[]
@@ -35,10 +36,12 @@ export interface WeatherResponseProps {
    daily: Daily
 }
 
+export type TemperatureUnitProps = 'celsius' | 'fahrenheit'
+
 export interface GetWeatherProps {
    latitude: number
    longitude: number
-   temperatureUnit: 'celcius' | 'fahrenheit'
+   temperatureUnit: TemperatureUnitProps
 }
 
 export const getWeather = ({ latitude, longitude, temperatureUnit }: GetWeatherProps) => {
@@ -57,4 +60,22 @@ export const getWeather = ({ latitude, longitude, temperatureUnit }: GetWeatherP
          .catch((err) => subscriber.error(err))
       return () => abortController.abort()
    })
+}
+
+export const getWeatherFromFetch = ({ latitude, longitude, temperatureUnit }: GetWeatherProps) => {
+   return fromFetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&daily=temperature_2m_min,temperature_2m_max&temperature_unit=${temperatureUnit}&timezone=${getTimeZone()}`
+   ).pipe(
+      switchMap((response) => {
+         if (response.ok) {
+            return response.json()
+         } else {
+            return of({ error: true, message: `Error: ${response.status}` })
+         }
+      }),
+      catchError((err) => {
+         console.error(err)
+         return of({ error: true, message: err.message })
+      })
+   )
 }
