@@ -58,3 +58,6 @@ export const locations: Record<string, LatLongProps> = {
       longitude: -122.5078114,
    },
 }
+
+export const defaultLocationKey = 'WashingtonDC'
+export const defaultTemperatureUnit = 'fahrenheit'
