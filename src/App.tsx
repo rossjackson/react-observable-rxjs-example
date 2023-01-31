@@ -1,18 +1,24 @@
 import React, { ChangeEvent, useEffect, useState } from 'react'
+import { catchError, concatMap, map, of, switchMap, tap } from 'rxjs'
+import { fromFetch } from 'rxjs/fetch'
 import {
    defaultLocationKey,
    defaultTemperatureUnit,
    locations,
    TemperatureUnitProps,
+   Weather,
    WeatherResponseProps,
 } from 'weatherHelper'
-import { weatherRequest$, weatherResponse$ } from 'weatherObservable'
+import { weatherRequest$ } from 'weatherObservable'
 import WeatherResultComponent from 'WeatherResultComponent'
 import './App.scss'
 
 const App = () => {
    const locationKeys = Object.keys(locations)
-   const [result, setResult] = useState<WeatherResponseProps | null>(null)
+   const [result, setResult] = useState<WeatherResponseProps>({
+      success: false,
+   })
+   const [loading, setLoading] = useState<boolean>(false)
 
    // const { fetching, error, weatherSubject } = useWeather({
    //    defaultLocationKey,
@@ -21,11 +27,40 @@ const App = () => {
    // })
 
    useEffect(() => {
-      const sub = weatherResponse$.subscribe((res) => setResult(res))
+      const sub = weatherRequest$
+         .pipe(
+            tap(() => setLoading(true)),
+            switchMap(({ latitude, longitude, temperatureUnit }) =>
+               fromFetch(
+                  `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&daily=temperature_2m_min,temperature_2m_max&temperature_unit=${temperatureUnit}&timezone=${
+                     new Intl.DateTimeFormat().resolvedOptions().timeZone
+                  }`
+               ).pipe(
+                  tap((response) => {
+                     if (!response.ok) {
+                        throw new Error('API error')
+                     }
+                  }),
+                  concatMap<Response, Promise<Weather>>((response) => response.json()),
+                  map(
+                     (response) =>
+                        ({
+                           success: true,
+                           weather: response,
+                        } as WeatherResponseProps)
+                  ),
+                  catchError(() => {
+                     return of<WeatherResponseProps>({
+                        success: false,
+                     })
+                  }),
+                  tap(() => setLoading(false))
+               )
+            )
+         )
+         .subscribe((res) => setResult(res))
       return () => sub.unsubscribe()
    }, [])
-
-   console.log('render')
 
    const handleSelectionChange = (e: ChangeEvent<HTMLSelectElement>) => {
       if (!weatherRequest$) return
@@ -50,8 +85,8 @@ const App = () => {
          <header className="App-header">
             <div className="margin-bottom">
                <span>Show weather:</span>
-               {/* {fetching && <span>fetching data...</span>}
-               {error && <span>Error loading data</span>} */}
+               {loading && <span> fetching data...</span>}
+               {!result.success && <span> Error loading data</span>}
             </div>
             <select onChange={handleSelectionChange} defaultValue={defaultLocationKey}>
                {locationKeys.map((location) => (
@@ -68,10 +103,10 @@ const App = () => {
                <option value="celsius">Celcius</option>
                <option value="fahrenheit">Fahrenheit</option>
             </select>
-            {result && (
+            {result.weather && (
                <WeatherResultComponent
-                  daily={result.daily}
-                  temperatureUnit={result.daily_units.temperature_2m_max}
+                  daily={result.weather.daily}
+                  temperatureUnit={result.weather.daily_units.temperature_2m_max}
                />
             )}
          </header>

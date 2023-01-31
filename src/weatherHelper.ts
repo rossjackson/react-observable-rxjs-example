@@ -18,7 +18,7 @@ export interface Daily {
    temperature_2m_max: number[]
 }
 
-export interface WeatherResponseProps {
+export interface Weather {
    latitude: number
    longitude: number
    generationtime_ms: number
@@ -29,6 +29,11 @@ export interface WeatherResponseProps {
    current_weather: CurrentWeather
    daily_units: DailyUnits
    daily: Daily
+}
+
+export interface WeatherResponseProps {
+   success: boolean
+   weather?: Weather
 }
 
 export type TemperatureUnitProps = 'celsius' | 'fahrenheit'

@@ -15,7 +15,6 @@ export interface UseWeatherProps {
 
 export interface UseWeatherResponseProps {
    fetching: boolean
-   error?: string
    weatherSubject: BehaviorSubject<WeatherRequestProps> | null
 }
 
@@ -25,7 +24,6 @@ export const useWeather = ({
    setResult,
 }: UseWeatherProps): UseWeatherResponseProps => {
    const [fetching, setFetching] = useState<boolean>(false)
-   const [error, setError] = useState()
    const [weatherSubject, setWeatherSubject] =
       useState<BehaviorSubject<WeatherRequestProps> | null>(null)
 
@@ -55,7 +53,11 @@ export const useWeather = ({
             .then((weatherData: WeatherResponseProps) => {
                setResult(weatherData)
             })
-            .catch(setError)
+            .catch(() => {
+               setResult({
+                  success: false,
+               })
+            })
             .finally(() => setFetching(false))
       })
       return () => weatherSubject.unsubscribe()
@@ -63,7 +65,6 @@ export const useWeather = ({
 
    return {
       fetching,
-      error,
       weatherSubject,
    }
 }
