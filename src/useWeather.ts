@@ -3,6 +3,7 @@ import { BehaviorSubject } from 'rxjs'
 import {
    locations,
    TemperatureUnitProps,
+   Weather,
    WeatherRequestProps,
    WeatherResponseProps,
 } from 'weatherHelper'
@@ -50,8 +51,11 @@ export const useWeather = ({
                if (!response.ok) throw 'API Error'
                return response.json()
             })
-            .then((weatherData: WeatherResponseProps) => {
-               setResult(weatherData)
+            .then((weather: Weather) => {
+               setResult({
+                  success: true,
+                  weather,
+               })
             })
             .catch(() => {
                setResult({

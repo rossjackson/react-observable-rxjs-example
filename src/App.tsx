@@ -23,7 +23,7 @@ const App = () => {
    // const [temperatureUnit, setTemperatureUnit] =
    //    useState<TemperatureUnitProps>(defaultTemperatureUnit)
 
-   // const { fetching, error, weatherSubject } = useWeather({
+   // const { fetching, weatherSubject } = useWeather({
    //    defaultLocationKey,
    //    defaultTemperatureUnit,
    //    setResult,
@@ -116,6 +116,24 @@ const App = () => {
          temperatureUnit: e.currentTarget.value as TemperatureUnitProps,
       })
    }
+
+   // const handleSelectionChange = (e: ChangeEvent<HTMLSelectElement>) => {
+   //    if (!weatherSubject) return
+   //    const { latitude, longitude } = locations[e.currentTarget.value]
+   //    weatherSubject.next({
+   //       ...weatherRequest.value,
+   //       latitude,
+   //       longitude,
+   //    })
+   // }
+
+   // const handleTemperatureChange = (e: ChangeEvent<HTMLSelectElement>) => {
+   //    if (!weatherSubject) return
+   //    weatherSubject.next({
+   //       ...weatherSubject.value,
+   //       temperatureUnit: e.currentTarget.value as TemperatureUnitProps,
+   //    })
+   // }
 
    // const handleSelectionChange = (e: ChangeEvent<HTMLSelectElement>) => {
    //    setLocation(locations[e.currentTarget.value])
