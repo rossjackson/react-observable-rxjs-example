@@ -5,7 +5,7 @@ An approach on how to use Observable with React application
 
 [RxJS](https://rxjs.dev/) is the Javascript implementation of [ReactiveX](https://reactivex.io/).  [ReactiveX](https://reactivex.io/) was created by Microsoft to allow [reactive programming](https://en.wikipedia.org/wiki/Reactive_programming).  It is based on the [observer pattern](https://en.wikipedia.org/wiki/Observer_pattern).  The central data source called the observable sends the items it receives one at a time.  An Observable emits three events (next, error, complete).
 
-One thing to note is that Observable are not asynchronous.  It all depends on how you construct your Observable.  If you have promises, then it will return it asynchronously.
+One thing to note is that Observables are not asynchronous.  It all depends on how you construct your Observable.  If you have promises, then it will return it asynchronously.
 
 ## Implementation
 
